@@ -1,0 +1,21 @@
+services:
+  db:
+    image: postgres:17-alpine          # 18-alpine — лёгкий образ на Alpine Linux
+    container_name: practice-db
+    environment:
+      POSTGRES_DB: practice            # имя базы данных
+      POSTGRES_USER: postgres          # пользователь
+      POSTGRES_PASSWORD: postgres        # пароль (только для локальной разработки!)
+    ports:
+      - "5432:5432"                    # проброс порта: host:container
+    volumes:
+      - practice_postgres_data:/var/lib/postgresql        # persistent storage
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U practice -d practice"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s               # дать контейнеру время инициализироваться
+
+volumes:
+  practice_postgres_data:              # именованный volume — данные сохраняются между перезапусками
